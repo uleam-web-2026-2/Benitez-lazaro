@@ -1,0 +1,67 @@
+@baseUrl = http://localhost:8080
+
+### 1. POST válido (Crear comentario de ayuda)
+POST {{baseUrl}}/comentarios
+Content-Type: application/json
+
+{
+    "UsuarioID": 1,
+    "Texto": "¿Cómo configuro las rutas en el enrutador Chi?"
+}
+
+### 2. GET listar todos los comentarios
+GET {{baseUrl}}/comentarios
+
+### 3. GET filtrar comentarios por estado (Ej. pendiente)
+GET {{baseUrl}}/comentarios?estado=pendiente
+
+### 4. GET listar usuarios y sus comentarios (Solución Preload N+1)
+GET {{baseUrl}}/usuarios
+
+### 5. GET ID de comentario inexistente (404)
+GET {{baseUrl}}/comentarios/999
+
+### 6. GET ID no numérico (Error de formato)
+GET {{baseUrl}}/comentarios/abc
+
+### 7. POST con JSON roto (400)
+POST {{baseUrl}}/comentarios
+Content-Type: application/json
+
+{
+    "UsuarioID": 1,
+    "Texto": "Pregunta incompleta
+
+### 8. POST con usuario que no existe (422)
+POST {{baseUrl}}/comentarios
+Content-Type: application/json
+
+{
+    "UsuarioID": 9999,
+    "Texto": "Intento publicar con un usuario falso"
+}
+
+### 9. RUTA inexistente (404)
+GET {{baseUrl}}/ruta-falsa
+
+### 10. POST intentando saltarse la moderación enviando un estado avanzado (Debe forzar "pendiente")
+POST {{baseUrl}}/comentarios
+Content-Type: application/json
+
+{
+    "UsuarioID": 1,
+    "Texto": "Quiero aparecer como destacado de una vez",
+    "Estado": "destacado"
+}
+
+### 11. PUT para actualizar estado y medalla (Moderar comentario)
+PUT {{baseUrl}}/comentarios/1
+Content-Type: application/json
+
+{
+    "Estado": "aprobado",
+    "Medalla": "Colaborador"
+}
+
+### 12. DELETE de un comentario existente
+DELETE {{baseUrl}}/comentarios/1
