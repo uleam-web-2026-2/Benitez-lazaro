@@ -86,3 +86,10 @@ sequenceDiagram
 **Caso correcto:** ![Respuesta correcta](hito1_respuesta_ok.png)
 
 **Caso con error de validación:** ![Respuesta con error](hito1_respuesta_error.png)
+
+
+## G. Cómo ejecutar el proyecto
+
+1. Copiar `.env.example` a `.env` y poner la contraseña de PostgreSQL.
+2. Ejecutar `go run main.go -reset` la primera vez, para crear las tablas y los datos de ejemplo.
+3. Ejecutar `go test ./... -v` para correr las pruebas.
