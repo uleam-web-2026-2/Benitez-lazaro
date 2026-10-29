@@ -39,3 +39,10 @@ internal/
 - La decisión de «esta ruta pide token» está en una sola línea de `internal/api/router.go` (`r.Use(auth.Autenticar(secreto))`), y la de «solo moderador» en la siguiente (`r.Use(auth.RequiereRol(...))`).
 
 **Transición prohibida:** responde **422** y no 409 ni 400 ni 403. El JSON está bien formado (no es 400), el usuario sí tiene permiso (no es 403), pero la petición pide algo que la regla del negocio no permite. Se valida en `servicio.CambiarEstado` con `TransicionPermitida`.
+
+
+## Declaración de IA · Hito 2
+
+Usamos Claude (Anthropic) para ayudarnos con el rediseño del modelo de datos (8 tablas), el código en capas (handler, servicio y repositorio), el inicio de sesión con token, el contrato openapi.yaml, la colección de Bruno y la hoja del hito. Nosotros revisamos el código, corrimos las pruebas y las seis peticiones, y podemos explicar cada decisión.
+
+Revisado por Alexander Lazaro: probamos las seis peticiones en Bruno, el validador y go test ./....
