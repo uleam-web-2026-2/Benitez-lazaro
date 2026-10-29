@@ -41,3 +41,6 @@ internal/
 **Transición prohibida:** responde **422** y no 409 ni 400 ni 403. El JSON está bien formado (no es 400), el usuario sí tiene permiso (no es 403), pero la petición pide algo que la regla del negocio no permite. Se valida en `servicio.CambiarEstado` con `TransicionPermitida`.
 
    Revisado por Alexander Lazaro: probamos las seis peticiones en Bruno, el validador y go test.
+
+
+   //
