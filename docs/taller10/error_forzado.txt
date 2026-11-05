@@ -1,0 +1,10 @@
+﻿=== RUN   TestTransaccionAtomica
+=== RUN   TestTransaccionAtomica/gorm
+=== RUN   TestTransaccionAtomica/sqlc
+--- PASS: TestTransaccionAtomica (0.19s)
+    --- PASS: TestTransaccionAtomica/gorm (0.01s)
+    --- PASS: TestTransaccionAtomica/sqlc (0.00s)
+=== RUN   TestNoEncontradoSqlc
+--- PASS: TestNoEncontradoSqlc (0.15s)
+PASS
+ok  	COMUNITARIO/internal/comentarios/repositorio	0.764s

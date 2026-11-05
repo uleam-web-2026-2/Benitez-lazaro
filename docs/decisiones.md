@@ -44,3 +44,18 @@ internal/
 
 
    //
+
+
+## Semana 10 · transacciones
+
+**D1. Repositorio como interfaz.** El servicio solo conoce `servicio.Repositorio`. Hay dos adaptadores: `Gorm` y `Sqlc` (que incrusta a `Gorm` y reemplaza solo lo que se escribe en SQL). Se cambia de uno a otro en una línea de `main.go`.
+
+**D2. DTO en la entrada y la salida.** `modelos.Comentario` ya no tiene etiquetas `json`. El cliente manda `ComentarioPeticion` (solo texto y categoría) y recibe `ComentarioRespuesta`. Así no puede fijar `estado`, `usuario_id` ni `moderador_id`, y `eliminado` nunca sale.
+
+**D3. sqlc para los casos críticos.** Consultas escritas a mano en `db/consultas.sql` (buscar y guardar comentario, registrar punto, sumar reputación, listar medallas, otorgar medalla). Se genera con `sqlc generate` el paquete `filas`. Se guarda en el repositorio porque el profesor y el compañero deben poder compilar sin instalar sqlc.
+
+**D4. Qué es atómico.** Al destacar un comentario: guardar el estado + registrar el punto + sumar reputación + otorgar medalla. Si algo falla, no queda nada a medias.
+
+**D5. Transacción en cada adaptador.** GORM: `db.Transaction`. sqlc: `BeginTx` + `q.WithTx(tx)` + `Commit`/`Rollback`. Dentro de la transacción solo se usan métodos que el adaptador sqlc reemplaza (los demás irían por GORM, fuera de la transacción).
+
+**D6. Prueba del fallo forzado.** `transaccion_test.go` guarda el comentario, suma reputación y devuelve un error a mitad: comprueba que el estado y la reputación vuelven a como estaban, con los dos adaptadores. Se omite sola si no hay PostgreSQL.
