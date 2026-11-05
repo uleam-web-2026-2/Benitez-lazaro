@@ -1,4 +1,4 @@
-## D1 · ¿Quién pone el estado al crear?
+﻿## D1 · ¿Quién pone el estado al crear?
 
 *Opciones:* 
 Que el cliente envíe el estado al crear el comentario, o que el servidor lo asigne automáticamente por seguridad.
@@ -48,14 +48,24 @@ internal/
 
 ## Semana 10 · transacciones
 
-**D1. Repositorio como interfaz.** El servicio solo conoce `servicio.Repositorio`. Hay dos adaptadores: `Gorm` y `Sqlc` (que incrusta a `Gorm` y reemplaza solo lo que se escribe en SQL). Se cambia de uno a otro en una línea de `main.go`.
+### D1 · El caso
+El caso es destacar un comentario (`CambiarEstado` hacia `destacado`). Escribe en cuatro lugares: cambia el estado del comentario, registra una fila en `puntos`, suma la reputación del usuario y otorga la medalla que corresponda. Si fallara a mitad de camino, quedaría un comentario destacado sin puntos, o puntos sin reputación, o reputación sin medalla: el usuario vería una reputación que no coincide con su historial.
 
-**D2. DTO en la entrada y la salida.** `modelos.Comentario` ya no tiene etiquetas `json`. El cliente manda `ComentarioPeticion` (solo texto y categoría) y recibe `ComentarioRespuesta`. Así no puede fijar `estado`, `usuario_id` ni `moderador_id`, y `eliminado` nunca sale.
+### D2 · Opciones que consideramos
+1. **`EnTransaccion(fn)` en la interfaz del repositorio.** El servicio llama `Repo.EnTransaccion(func(tx Repositorio) error {...})` y adentro usa `tx`. Cada adaptador abre su propia transacción (GORM con `db.Transaction`, sqlc con `BeginTx` y `WithTx`). Cumple las cinco restricciones: el servicio no importa gorm ni database/sql, el repositorio falso solo ejecuta `fn`, los manejadores no cambian y cada adaptador resuelve la suya.
+2. **Pasar un `*gorm.DB` o un `*sql.Tx` al servicio.** Es lo más corto, pero el servicio tendría que importar gorm o database/sql (rompe la restricción 1) y no funcionaría con el otro adaptador.
+3. **Un método compuesto `DestacarComentario(...)` en el repositorio** que haga las cuatro escrituras. Cumple la atomicidad, pero las reglas (cuántos puntos, qué medalla toca) quedarían escritas dentro de cada adaptador, dos veces, y no se podrían probar con el repositorio falso.
 
-**D3. sqlc para los casos críticos.** Consultas escritas a mano en `db/consultas.sql` (buscar y guardar comentario, registrar punto, sumar reputación, listar medallas, otorgar medalla). Se genera con `sqlc generate` el paquete `filas`. Se guarda en el repositorio porque el profesor y el compañero deben poder compilar sin instalar sqlc.
+### D3 · La que elegimos y por qué
+La opción 1. En nuestro proyecto las reglas de puntos y medallas (`PuntosDestacado`, `MedallaMayor`) viven en el servicio y se prueban sin base de datos. Con `EnTransaccion` esas reglas se quedan donde están y la transacción es solo un detalle del adaptador. Además, desde el hito 2 la interfaz ya tenía `EnTransaccion` para GORM, así que el servicio no cambió.
 
-**D4. Qué es atómico.** Al destacar un comentario: guardar el estado + registrar el punto + sumar reputación + otorgar medalla. Si algo falla, no queda nada a medias.
+### D4 · La que descartamos y por qué
+La opción 2 (pasar `tx` al servicio). El servicio tendría que importar `gorm` y, al cambiar a sqlc, habría que reescribirlo para `database/sql`. Perderíamos las pruebas con repositorio falso, que son las que hacen que `go test ./...` corra sin PostgreSQL.
 
-**D5. Transacción en cada adaptador.** GORM: `db.Transaction`. sqlc: `BeginTx` + `q.WithTx(tx)` + `Commit`/`Rollback`. Dentro de la transacción solo se usan métodos que el adaptador sqlc reemplaza (los demás irían por GORM, fuera de la transacción).
+### D5 · Con sqlc
+Hubo que implementar `EnTransaccion` en el adaptador sqlc: `Conexion.BeginTx`, crear una copia del adaptador con `q.WithTx(tx)` y hacer `Commit` o `Rollback` según el resultado de `fn`. También hubo que reemplazar en sqlc los cinco métodos que el servicio usa dentro de la transacción (guardar comentario, registrar punto, sumar reputación, listar medallas y otorgar medalla); si no, los métodos heredados de GORM habrían corrido fuera de la transacción. Límite que anotamos: dentro de `fn` solo deben usarse métodos reescritos por el adaptador. El diseño (interfaz y servicio) no cambió; se agregaron cuatro consultas más en `db/consultas.sql`.
 
-**D6. Prueba del fallo forzado.** `transaccion_test.go` guarda el comentario, suma reputación y devuelve un error a mitad: comprueba que el estado y la reputación vuelven a como estaban, con los dos adaptadores. Se omite sola si no hay PostgreSQL.
+### D6 · Archivos
+Tocamos: `internal/comentarios/repositorio/sqlc.go` (adaptador y `EnTransaccion`), `db/consultas.sql`, `db/schema.sql`, `sqlc.yaml`, `internal/comentarios/repositorio/filas/` (generado por sqlc), `internal/comentarios/repositorio/transaccion_test.go` (prueba con fallo forzado contra PostgreSQL con los dos adaptadores) y `main.go` (se elige el adaptador). Quedaron igual: `servicio.go`, `reglas.go`, el repositorio falso, los manejadores y el router.
+
+**Qué operación de más necesitaría esto si el proyecto creciera:** el pago mensual del negocio (`estado_pago` de `Negocio`) junto con un registro de pago; hoy se verifica a mano, pero al automatizarlo habría que actualizar dos tablas a la vez.
