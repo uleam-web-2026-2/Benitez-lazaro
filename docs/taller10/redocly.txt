@@ -1,4 +1,16 @@
-﻿Comando: npx @redocly/cli lint docs/openapi.yaml --format=stylish
-validating docs\openapi.yaml...
-docs\openapi.yaml: validated in 25ms
-Your API description is valid.
+Need to install the following packages:
+@redocly/cli@2.54.3
+Ok to proceed? (y) 
+    [33m╔═══════════════════════════════════════════════════════╗[39m
+    [33m║                                                       ║[39m
+    [33m║[39m  A new version of [36mRedocly CLI[39m ([32m2.75.0[39m) is available.  [33m║[39m
+    [33m║[39m  Update now: `[36mnpm i -g @redocly/cli@latest[39m`.          [33m║[39m
+    [33m║[39m  Changelog: https://redocly.com/docs/cli/changelog/   [33m║[39m
+    [33m║                                                       ║[39m
+    [33m╚═══════════════════════════════════════════════════════╝[39m
+
+[90mvalidating docs\openapi.yaml...
+[39m[90mdocs\openapi.yaml: validated in 21ms
+
+[39m[32mWoohoo! Your API description is valid. 🎉
+[39m
