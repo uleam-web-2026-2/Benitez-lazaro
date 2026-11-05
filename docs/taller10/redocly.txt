@@ -1,0 +1,4 @@
+﻿Comando: npx @redocly/cli lint docs/openapi.yaml --format=stylish
+validating docs\openapi.yaml...
+docs\openapi.yaml: validated in 25ms
+Your API description is valid.
