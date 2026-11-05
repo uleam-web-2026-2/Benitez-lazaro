@@ -1,25 +1,25 @@
-# Peticiones de la Semana 10 (con el servidor corriendo)
+# Peticiones del taller 10
 
-Mismas seis peticiones del Hito 2 en Bruno. Lo nuevo que se nota:
-- La respuesta de un comentario ya no trae `eliminado` (viene del DTO).
-- El POST ignora cualquier `estado` o `usuario_id` que se mande en el cuerpo.
-- La petición 5 (aprobar/destacar) ahora corre por sqlc en una transacción.
+| Petición | Antes | Después |
+| --- | --- | --- |
+| 1 sin token | 401 | 401 |
+| 2 login | 200 | 200 |
+| 3 con token | 200 | 200 |
+| 4 rol sin permiso | 403 | 403 |
+| 5 cambio permitido | 200 | 200 |
+| 6 transición prohibida | 422 | 422 |
 
-Pegue aquí las capturas de las respuestas.
-
-## Resultados
-
-| Petición | Código |
-|---|---|
-| 0 crear registro | 201 |
-| 1 sin token | 401 |
-| 2 login | 200 |
-| 3 con token | 200 |
-| 4 miembro no puede | 403 |
-| 5 moderador sí puede (sqlc + transacción) | 200 |
-| 6 transición prohibida | 422 |
+La petición 0 (crear un registro nuevo, 201) se corre antes de la 4 y la 5.
+«Antes» son los códigos del hito 2, antes de tocar el código. «Después» son los de este taller, con los DTO y el repositorio de sqlc ya conectado. No cambió ningún código.
 
 ![Petición 5](bruno_5.png)
 
 ![Petición 6](bruno_6.png)
+
+## Paso 2.1 · Cuerpo con id y estado inventados
+(Se completa con el resultado de la prueba.)
+
+Se envió con el token de Jose: {"id":77,"estado":"destacado","usuario_id":2,"texto":"prueba paso 2.1"}
+
+Resultado: se creó con id 7 (no 77), estado pendiente y usuario_id 1 (el del token). El DTO ignora id, estado y usuario_id; los fija el servidor.
 
