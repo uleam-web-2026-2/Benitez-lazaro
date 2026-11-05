@@ -56,9 +56,16 @@ func main() {
 	}
 
 	// 3. Se arman las capas: repositorio → servicio → handler → router.
-	repo := repositorio.Nuevo(db)
+	repoGorm := repositorio.Nuevo(db)
+	conexion, err := db.DB() // la conexión de database/sql que usa sqlc
+	if err != nil {
+		log.Fatal("no se pudo obtener la conexión: ", err)
+	}
+	// Taller 10: el servicio recibe el adaptador sqlc (hereda de GORM lo demás).
+	// Para volver a GORM puro basta cambiar a: servicio.Nuevo(repoGorm)
+	repo := repositorio.NuevoSqlc(repoGorm, conexion)
 	h := &handler.Manejador{Servicio: servicio.Nuevo(repo)}
-	a := &auth.Manejador{Cuentas: repo, Secreto: []byte(secreto), Vida: time.Hour}
+	a := &auth.Manejador{Cuentas: repoGorm, Secreto: []byte(secreto), Vida: time.Hour}
 
 	puerto := os.Getenv("PORT")
 	if puerto == "" {
