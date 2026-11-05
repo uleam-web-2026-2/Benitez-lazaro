@@ -54,10 +54,7 @@ func leerID(r *http.Request) uint {
 
 // POST /comentarios
 func (m *Manejador) Crear(w http.ResponseWriter, r *http.Request) {
-	var in struct {
-		Texto       string `json:"texto"`
-		CategoriaID *uint  `json:"categoria_id"`
-	}
+	var in ComentarioPeticion
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		http.Error(w, "JSON inválido", http.StatusBadRequest)
 		return
@@ -67,7 +64,7 @@ func (m *Manejador) Crear(w http.ResponseWriter, r *http.Request) {
 		responderError(w, err)
 		return
 	}
-	responderJSON(w, http.StatusCreated, c)
+	responderJSON(w, http.StatusCreated, nuevaRespuesta(*c))
 }
 
 // GET /comentarios?estado=&page=&limit=
@@ -84,7 +81,7 @@ func (m *Manejador) Listar(w http.ResponseWriter, r *http.Request) {
 		responderError(w, err)
 		return
 	}
-	responderJSON(w, http.StatusOK, lista)
+	responderJSON(w, http.StatusOK, nuevasRespuestas(lista))
 }
 
 func porDefecto(valor, otro string) string {
@@ -101,14 +98,12 @@ func (m *Manejador) Obtener(w http.ResponseWriter, r *http.Request) {
 		responderError(w, err)
 		return
 	}
-	responderJSON(w, http.StatusOK, c)
+	responderJSON(w, http.StatusOK, nuevaRespuesta(*c))
 }
 
 // PATCH /comentarios/{id}/estado  (solo moderador: lo exige el router)
 func (m *Manejador) CambiarEstado(w http.ResponseWriter, r *http.Request) {
-	var in struct {
-		Estado string `json:"estado"`
-	}
+	var in CambioEstadoPeticion
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		http.Error(w, "JSON inválido", http.StatusBadRequest)
 		return
@@ -118,7 +113,7 @@ func (m *Manejador) CambiarEstado(w http.ResponseWriter, r *http.Request) {
 		responderError(w, err)
 		return
 	}
-	responderJSON(w, http.StatusOK, c)
+	responderJSON(w, http.StatusOK, nuevaRespuesta(*c))
 }
 
 // DELETE /comentarios/{id}  (solo moderador)
@@ -137,5 +132,5 @@ func (m *Manejador) ListarUsuarios(w http.ResponseWriter, r *http.Request) {
 		responderError(w, err)
 		return
 	}
-	responderJSON(w, http.StatusOK, u)
+	responderJSON(w, http.StatusOK, nuevasRespuestasUsuario(u))
 }

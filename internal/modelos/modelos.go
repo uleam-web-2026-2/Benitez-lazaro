@@ -77,16 +77,18 @@ type Categoria struct {
 
 // 5. Comentario (corregida): ya no guarda la medalla como texto;
 // tiene categoría, quién lo moderó, fecha de cambio y borrado lógico.
+// Taller 10: sin etiquetas json. Lo que entra y sale por HTTP son los DTO
+// de internal/comentarios/handler/dtos.go.
 type Comentario struct {
-	ID          uint           `gorm:"primaryKey" json:"id"`
-	UsuarioID   uint           `gorm:"not null;index" json:"usuario_id"`
-	CategoriaID *uint          `gorm:"index" json:"categoria_id"`
-	Texto       string         `gorm:"not null;size:1000" json:"texto"`
-	Estado      string         `gorm:"not null;default:pendiente;index" json:"estado"`
-	ModeradorID *uint          `json:"moderador_id"`
-	Creado      time.Time      `json:"creado"`
-	Actualizado time.Time      `json:"actualizado"`
-	Eliminado   gorm.DeletedAt `gorm:"index" json:"-"`
+	ID          uint   `gorm:"primaryKey"`
+	UsuarioID   uint   `gorm:"not null;index"`
+	CategoriaID *uint  `gorm:"index"`
+	Texto       string `gorm:"not null;size:1000"`
+	Estado      string `gorm:"not null;default:pendiente;index"`
+	ModeradorID *uint
+	Creado      time.Time
+	Actualizado time.Time
+	Eliminado   gorm.DeletedAt `gorm:"index"`
 }
 
 // 6. Punto: libro de movimientos. Cada fila es una suma de puntos.
