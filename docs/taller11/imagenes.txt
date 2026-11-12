@@ -1,0 +1,3 @@
+﻿IMAGE                     ID             DISK USAGE   CONTENT SIZE   EXTRA
+comunitario:compilacion   1bfda7bfc485       1.63GB          387MB        
+comunitario:latest        18c889c2532e       38.7MB         11.6MB        

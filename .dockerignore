@@ -1,0 +1,8 @@
+# Lo que no entra a la construcción.
+# Los secretos de esta máquina nunca van a una imagen.
+.env
+.env.*
+!.env.example
+# La historia de Git y los binarios compilados en su máquina.
+.git
+*.exe
