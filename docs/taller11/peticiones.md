@@ -2,12 +2,12 @@
 
 | Petición | Con go run | En el contenedor | Con Compose |
 | --- | --- | --- | --- |
-| 1 sin token | 401 | 401 | |
-| 2 login | 200 | 200 | |
-| 3 con token | 200 | 200 | |
-| 4 rol sin permiso | 403 | 403 | |
-| 5 cambio permitido | 200 | 200 | |
-| 6 transición prohibida | 422 | 422 | |
+| 1 sin token | 401 | 401 | 401 |
+| 2 login | 200 | 200 | 200 |
+| 3 con token | 200 | 200 | 200 |
+| 4 rol sin permiso | 403 | 403 | 403 |
+| 5 cambio permitido | 200 | 200 | 200 |
+| 6 transición prohibida | 422 | 422 | 422 |
 
 Petición 3 con go run (respuesta completa):
 
@@ -34,3 +34,4 @@ La misma, en el contenedor (paso 2.5):
 ```
 
 Notas: el contenedor usa su propia base (`pg`, en el 5433), por eso los ids empiezan de cero y los datos son otros. Las peticiones 4 y 5 se hicieron con el registro nuevo (id 4). Todos los códigos coinciden con `go run`. Lo único que cambió es el formato de las fechas: `-05:00` con `go run` y `Z` (UTC) en el contenedor.
+

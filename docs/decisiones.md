@@ -87,3 +87,21 @@ Con `go run` nuestras fechas salen como `2026-11-11T19:45:40.796347-05:00` y en 
 
 ### Nota sobre el código
 Para que el log del contenedor mostrara una línea por petición (paso 2.4) agregamos `r.Use(middleware.Logger)` en `internal/api/router.go`. No cambia ninguna respuesta de la API.
+
+
+## Semana 11 · reto: la API y la base, juntas
+
+### D5 · Cómo encuentra la API a la base
+La API usa `DB_HOST=db` y `DB_PORT=5432`. `db` es el nombre del servicio en `compose.yaml`: Compose crea una red interna y resuelve ese nombre a la dirección del contenedor de PostgreSQL. Usamos el 5432 y no el 5433 porque el 5433 era el puerto que habíamos publicado en nuestra máquina para el contenedor `pg` suelto; entre contenedores de la misma red se usa el puerto real de PostgreSQL, que es el 5432. Con Compose no necesitamos `host.docker.internal`.
+
+### D6 · El orden de arranque
+Con la base recién creada hay dos riesgos: que la API arranque antes de que PostgreSQL acepte conexiones, y que la base esté vacía. No llegamos a ver el primer fallo en nuestras pruebas porque lo previmos desde el principio: `depends_on` solo espera a que el contenedor arranque, no a que PostgreSQL esté listo, así que agregamos un `healthcheck` con `pg_isready` y `condition: service_healthy`, y la API arranca solo cuando la base está `healthy`. El `healthcheck` usa `-h 127.0.0.1` (TCP) porque en el primer arranque PostgreSQL crea la base con un servidor temporal que solo escucha por socket, y sin `-h` la prueba daría «listo» demasiado pronto. En cuanto a la base vacía, no es problema: la API ejecuta `AutoMigrate` y la semilla al arrancar y crea las tablas y los datos. Lo comprobamos tres veces seguidas con `docker compose down -v` y `docker compose up -d --build` (los tres intentos terminaron con `db` healthy, `api` Up y `401` sin token).
+
+### D7 · Dónde quedan los datos
+La base guarda sus archivos en el volumen `datos_pg` (montado en `/var/lib/postgresql/data`). `docker compose down` elimina los contenedores y la red, pero no el volumen, y por eso los registros siguen al volver a subir: comprobamos con `psql` que el comentario 4, aprobado antes del `down`, seguía `aprobado` después. Lo que borra los datos es `docker compose down -v`, que además elimina el volumen.
+
+### D8 · Los secretos
+`compose.yaml` no tiene ninguna contraseña. Usa `${DB_PASSWORD}` y `${JWT_SECRET}`, que Compose toma del archivo `.env` de la carpeta (el mismo de `go run .`, que Git ignora). Con `${DB_PASSWORD:?...}` Compose se detiene con un mensaje si falta alguno. En el repositorio solo está `.env.example`, sin valores reales: quien clone el proyecto copia ese archivo a `.env` y completa los valores. `.env.docker` es solo para el `docker run` suelto y Compose no lo usa.
+
+### D9 · Lo que se publica en la máquina
+Solo se publica el puerto de la API, `8080:8080` (el valor de `PORT`), que es al que llama Bruno. La base no se publica: así no choca con el PostgreSQL de Windows (5432) ni con el contenedor `pg` (5433), y no queda expuesta fuera de la red de Compose. Cuando necesitemos consultarla usamos `docker compose exec db psql -U postgres -d APP-COMUNITARIA`, y así revisamos los datos tras el `down`.

@@ -1,0 +1,43 @@
+# La API y su base de datos, juntas. Se arrancan con:
+#   docker compose up -d --build
+# Los secretos NO estan aqui: Compose los toma del archivo .env de esta carpeta
+# (el mismo que usa "go run ."). Si falta alguno, Compose se detiene y avisa.
+name: comunitario
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?falta DB_PASSWORD en el archivo .env}
+      POSTGRES_DB: ${DB_NAME:-APP-COMUNITARIA}
+    volumes:
+      - datos_pg:/var/lib/postgresql/data
+    healthcheck:
+      # -h 127.0.0.1 pregunta por TCP: durante la primera creacion de la base
+      # el servidor temporal solo escucha por socket y esta prueba aun falla.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    # Sin "ports": la base no se publica en la maquina (no choca con el 5432
+    # ni con el 5433). Solo la API la alcanza, por la red interna de Compose.
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:?falta DB_PASSWORD en el archivo .env}
+      DB_NAME: ${DB_NAME:-APP-COMUNITARIA}
+      PORT: ${PORT:-8080}
+      JWT_SECRET: ${JWT_SECRET:?falta JWT_SECRET en el archivo .env}
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+
+volumes:
+  datos_pg:

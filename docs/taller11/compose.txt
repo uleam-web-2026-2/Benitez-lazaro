@@ -1,0 +1,16 @@
+﻿NAME                IMAGE             COMMAND                  SERVICE   CREATED         STATUS                   PORTS
+comunitario-api-1   comunitario-api   "/servidor"              api       3 minutes ago   Up 3 minutes             0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+comunitario-db-1    postgres:16       "docker-entrypoint.s…"   db        3 minutes ago   Up 3 minutes (healthy)   5432/tcp
+api-1  | Migrando las 8 tablas...
+api-1  | Servidor comunitario corriendo en http://localhost:8080
+api-1  | 2026/11/12 01:27:38 "GET http://localhost:8080/comentarios HTTP/1.1" from 172.20.0.1:44110 - 401 43B in 13.081µs
+api-1  | 2026/11/12 01:28:10 "POST http://localhost:8080/login HTTP/1.1" from 172.20.0.1:52060 - 200 198B in 26.180061ms
+api-1  | 2026/11/12 01:28:16 "POST http://localhost:8080/login HTTP/1.1" from 172.20.0.1:42164 - 200 198B in 23.594428ms
+api-1  | 2026/11/12 01:28:16 "POST http://localhost:8080/comentarios HTTP/1.1" from 172.20.0.1:42172 - 201 219B in 7.953689ms
+api-1  | 2026/11/12 01:28:28 "GET http://localhost:8080/comentarios HTTP/1.1" from 172.20.0.1:50434 - 401 43B in 63.033µs
+api-1  | 2026/11/12 01:28:40 "GET http://localhost:8080/comentarios HTTP/1.1" from 172.20.0.1:46950 - 200 892B in 2.270448ms
+api-1  | 2026/11/12 01:29:02 "PATCH http://localhost:8080/comentarios/4/estado HTTP/1.1" from 172.20.0.1:50212 - 403 42B in 59.58µs
+api-1  | 2026/11/12 01:29:25 "POST http://localhost:8080/login HTTP/1.1" from 172.20.0.1:52252 - 200 201B in 24.405353ms
+api-1  | 2026/11/12 01:29:25 "PATCH http://localhost:8080/comentarios/4/estado HTTP/1.1" from 172.20.0.1:52254 - 200 212B in 7.079192ms
+api-1  | 2026/11/12 01:29:36 "POST http://localhost:8080/login HTTP/1.1" from 172.20.0.1:50968 - 200 201B in 24.100069ms
+api-1  | 2026/11/12 01:29:36 "PATCH http://localhost:8080/comentarios/1/estado HTTP/1.1" from 172.20.0.1:50974 - 422 35B in 918.644µs
