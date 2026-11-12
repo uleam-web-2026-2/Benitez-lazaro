@@ -9,10 +9,12 @@ import (
 	"COMUNITARIO/internal/modelos"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func Router(h *handler.Manejador, a *auth.Manejador, secreto []byte) http.Handler {
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
 
 	r.Post("/login", a.Login) // pública
 

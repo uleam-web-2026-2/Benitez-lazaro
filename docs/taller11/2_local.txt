@@ -1,0 +1,8 @@
+2026/11/12 00:53:52 Fallo al conectar a la base de datos: failed to connect to `user=postgres database=APP-COMUNITARIA`:
+	127.0.0.1:5432 (localhost): dial error: dial tcp 127.0.0.1:5432: connect: connection refused
+	[::1]:5432 (localhost): dial error: dial tcp [::1]:5432: connect: connection refused
+
+2026/11/12 00:53:52 [35m/src/main.go:38
+[0m[31m[error] [0mfailed to initialize database, got error failed to connect to `user=postgres database=APP-COMUNITARIA`:
+	127.0.0.1:5432 (localhost): dial error: dial tcp 127.0.0.1:5432: connect: connection refused
+	[::1]:5432 (localhost): dial error: dial tcp [::1]:5432: connect: connection refused

@@ -69,3 +69,21 @@ Hubo que implementar `EnTransaccion` en el adaptador sqlc: `Conexion.BeginTx`, c
 Tocamos: `internal/comentarios/repositorio/sqlc.go` (adaptador y `EnTransaccion`), `db/consultas.sql`, `db/schema.sql`, `sqlc.yaml`, `internal/comentarios/repositorio/filas/` (generado por sqlc), `internal/comentarios/repositorio/transaccion_test.go` (prueba con fallo forzado contra PostgreSQL con los dos adaptadores) y `main.go` (se elige el adaptador). Quedaron igual: `servicio.go`, `reglas.go`, el repositorio falso, los manejadores y el router.
 
 **Qué operación de más necesitaría esto si el proyecto creciera:** el pago mensual del negocio (`estado_pago` de `Negocio`) junto con un registro de pago; hoy se verifica a mano, pero al automatizarlo habría que actualizar dos tablas a la vez.
+
+
+## Semana 11 · el contenedor
+
+### D1 · Qué entra en la imagen
+La imagen final (`comunitario:latest`) solo tiene el binario `/servidor` sobre distroless: pesa 38.7 MB (11.6 MB de contenido). Todo lo demás se quedó en la etapa de compilación (`comunitario:compilacion`), que pesa 1.63 GB porque trae Go, las herramientas y las librerías. Sin `.dockerignore`, el contexto de la primera construcción fue de 2.45 MB y con él bajó a 6.78 kB: la diferencia era el `.env` y la carpeta `.git`. Sin `.dockerignore`, el `.env` no llegaría a la imagen final, porque la segunda etapa solo copia `/servidor`; pero sí llegaría a la etapa de compilación (`COPY . .` lo dejaría en `/src/.env`) y quedaría guardado en las capas de `comunitario:compilacion` y en la caché de Docker. Si alguien publica o comparte esa imagen, se lleva la clave.
+
+### D2 · Dónde está la base, vista desde el contenedor
+Con `DB_HOST=localhost` falló con `127.0.0.1:5432 ... connection refused` (`2_local.txt`): dentro del contenedor `localhost` es el propio contenedor, y ahí no hay ninguna base. Pusimos `DB_HOST=host.docker.internal` y `DB_PORT=5433`, que es la máquina donde publicamos el contenedor `pg` de PostgreSQL. Usamos un contenedor porque el PostgreSQL de Windows rechaza las conexiones que vienen de Docker. Cuando la API corra en un servidor que no es nuestra máquina, `host.docker.internal` ya no sirve: habrá que poner la dirección real de la base (o el nombre de su servicio si están en la misma red).
+
+### D3 · Los puertos
+Usamos `-p 8080:8080`. El número de la izquierda es el de la máquina (el que usa Bruno, `localhost:8080`); el de la derecha es el del contenedor, donde escucha el servidor. El de la derecha tiene que coincidir con `PORT` de `.env.docker`, porque el servidor escucha en ese puerto. Si no coincide, el puerto publicado no tiene nada escuchando y la petición se corta (`Connection reset by peer`) o no recibe respuesta.
+
+### D4 · La hora
+Con `go run` nuestras fechas salen como `2026-11-11T19:45:40.796347-05:00` y en el contenedor como `2026-11-12T01:00:46.615151Z`. Es el mismo momento (UTC-5 frente a UTC), solo escrito distinto. Cambió porque la imagen distroless no trae la base de zonas horarias: dentro del contenedor la hora local es UTC. El código y la base son los mismos. Decidimos no cambiar el código y dejar que la API devuelva UTC (`Z`), que es una forma estándar y sin ambigüedad; el cliente la convierte a su zona. También los logs del contenedor salen en UTC.
+
+### Nota sobre el código
+Para que el log del contenedor mostrara una línea por petición (paso 2.4) agregamos `r.Use(middleware.Logger)` en `internal/api/router.go`. No cambia ninguna respuesta de la API.

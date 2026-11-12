@@ -1,0 +1,12 @@
+Migrando las 8 tablas...
+Servidor comunitario corriendo en http://localhost:8080
+2026/11/12 01:00:40 "POST http://localhost:8080/login HTTP/1.1" from 172.17.0.1:52144 - 200 198B in 54.483298ms
+2026/11/12 01:00:46 "POST http://localhost:8080/login HTTP/1.1" from 172.17.0.1:39262 - 200 198B in 35.478387ms
+2026/11/12 01:00:46 "POST http://localhost:8080/comentarios HTTP/1.1" from 172.17.0.1:39278 - 201 219B in 26.907272ms
+2026/11/12 01:01:20 "GET http://localhost:8080/comentarios HTTP/1.1" from 172.17.0.1:54620 - 401 43B in 15.046µs
+2026/11/12 01:01:36 "GET http://localhost:8080/comentarios HTTP/1.1" from 172.17.0.1:42602 - 200 892B in 12.60801ms
+2026/11/12 01:01:53 "PATCH http://localhost:8080/comentarios/4/estado HTTP/1.1" from 172.17.0.1:38950 - 403 42B in 53.766µs
+2026/11/12 01:02:04 "POST http://localhost:8080/login HTTP/1.1" from 172.17.0.1:35796 - 200 201B in 36.410323ms
+2026/11/12 01:02:04 "PATCH http://localhost:8080/comentarios/4/estado HTTP/1.1" from 172.17.0.1:35802 - 200 212B in 19.683452ms
+2026/11/12 01:02:15 "POST http://localhost:8080/login HTTP/1.1" from 172.17.0.1:36406 - 200 201B in 38.37515ms
+2026/11/12 01:02:15 "PATCH http://localhost:8080/comentarios/1/estado HTTP/1.1" from 172.17.0.1:36410 - 422 35B in 3.585709ms

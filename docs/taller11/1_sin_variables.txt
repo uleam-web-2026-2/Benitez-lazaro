@@ -1,0 +1,1 @@
+2026/11/12 00:52:50 Falta JWT_SECRET en el archivo .env
