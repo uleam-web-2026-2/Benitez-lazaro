@@ -1,0 +1,31 @@
+internal/api/router.go:21:	r.Group(func(r chi.Router) {
+internal/api/router.go:29:		r.Group(func(r chi.Router) {
+internal/auth/clave.go:26:	return fmt.Sprintf("pbkdf2$%d$%s$%s", iteraciones, enc.EncodeToString(sal), base64.RawStdEncoding.EncodeToString(h)), nil
+internal/auth/token.go:42:	datos := enc.EncodeToString([]byte(cabecera)) + "." + enc.EncodeToString(cuerpo)
+internal/auth/token.go:43:	return datos + "." + firma(datos, secreto), nil
+internal/auth/token.go:53:	esperada := firma(p[0]+"."+p[1], secreto)
+internal/comentarios/handler/handler.go:72:	q := r.URL.Query()
+internal/comentarios/repositorio/filas/consultas.sql.go:31:	row := q.db.QueryRowContext(ctx, buscarComentario, id)
+internal/comentarios/repositorio/filas/consultas.sql.go:63:	result, err := q.db.ExecContext(ctx, guardarComentario,
+internal/comentarios/repositorio/filas/consultas.sql.go:82:	rows, err := q.db.QueryContext(ctx, listarMedallas)
+internal/comentarios/repositorio/filas/consultas.sql.go:123:	_, err := q.db.ExecContext(ctx, otorgarMedalla,
+internal/comentarios/repositorio/filas/consultas.sql.go:148:	row := q.db.QueryRowContext(ctx, registrarPunto,
+internal/comentarios/repositorio/filas/consultas.sql.go:171:	row := q.db.QueryRowContext(ctx, sumarReputacion, arg.Puntos, arg.ID)
+internal/comentarios/repositorio/filas/db.go:13:	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
+internal/comentarios/repositorio/filas/db.go:15:	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
+internal/comentarios/repositorio/filas/db.go:16:	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
+internal/comentarios/repositorio/repositorio.go:29:	q := g.DB.Order("id desc").Limit(limit).Offset((page - 1) * limit)
+internal/comentarios/repositorio/repositorio.go:31:		q = q.Where("estado = ?", estado) // parámetro seguro (evita inyección SQL)
+internal/comentarios/repositorio/repositorio.go:34:	err := q.Find(&lista).Error
+internal/comentarios/repositorio/repositorio.go:40:	if err := g.DB.First(&c, id).Error; err != nil {
+internal/comentarios/repositorio/repositorio.go:61:	if err := g.DB.First(&u, id).Error; err != nil {
+internal/comentarios/repositorio/repositorio.go:69:	if err := g.DB.First(&n, id).Error; err != nil {
+internal/comentarios/repositorio/repositorio.go:78:	err := g.DB.Preload("Comentarios").Preload("Medallas.Medalla").Find(&us).Error
+internal/comentarios/repositorio/repositorio.go:84:	err := g.DB.Model(&modelos.Categoria{}).Where("id = ?", id).Count(&n).Error
+internal/comentarios/repositorio/repositorio.go:89:	err := g.DB.Model(&modelos.Usuario{}).Where("id = ?", usuarioID).
+internal/comentarios/repositorio/repositorio.go:95:	if err := g.DB.Select("reputacion").First(&u, usuarioID).Error; err != nil {
+internal/comentarios/repositorio/repositorio.go:105:	err := g.DB.Order("puntos_minimos").Find(&ms).Error
+internal/comentarios/repositorio/repositorio.go:122:	if err := g.DB.Preload("Persona").Where("login = ?", login).First(&c).Error; err != nil {
+main.go:35:	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+main.go:74:	fmt.Println("Servidor comunitario corriendo en http://localhost:" + puerto)
+main.go:75:	log.Fatal(http.ListenAndServe(":"+puerto, api.Router(h, a, []byte(secreto))))
