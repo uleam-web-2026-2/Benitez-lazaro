@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Headers: Authorization, Content-Type
+Access-Control-Allow-Methods: PATCH
+Access-Control-Allow-Origin: http://localhost:5173
+Access-Control-Max-Age: 300
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Date: Thu, 19 Nov 2026 22:08:21 GMT
+Content-Length: 0
+

@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+Vary: Origin
+Date: Thu, 19 Nov 2026 22:09:27 GMT
+Content-Length: 217
+
+{"id":14,"usuario_id":1,"categoria_id":1,"texto":"Comentario para la prueba de CORS","estado":"aprobado","moderador_id":2,"creado":"2026-11-19T17:09:26.441698-05:00","actualizado":"2026-11-19T17:09:27.4091916-05:00"}

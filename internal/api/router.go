@@ -10,10 +10,19 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 func Router(h *handler.Manejador, a *auth.Manejador, secreto []byte) http.Handler {
 	r := chi.NewRouter()
+	// CORS arriba de todo: responde las peticiones previas (OPTIONS), que no tienen
+	// manejador. Minimo privilegio: se nombra el front, no "*".
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"http://localhost:5173"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowedHeaders: []string{"Authorization", "Content-Type"},
+		MaxAge:         300,
+	}))
 	r.Use(middleware.Logger)
 
 	r.Post("/login", a.Login) // pública
