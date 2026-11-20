@@ -119,3 +119,14 @@ Pusimos `http://localhost:5173`, donde va a correr el front, y no `*`: solo ese 
 
 ### D4 · Detrás de un proxy
 `ClientIPFromRemoteAddr` toma la IP de la conexión TCP (`RemoteAddr`). Si la API queda detrás de un proxy, todas las peticiones llegarían con la IP del proxy: todos los usuarios compartirían un solo contador y el sexto intento de cualquiera bloquearía a todos. La solución no es leer `X-Forwarded-For` sin más, porque esa cabecera la puede escribir el cliente: un atacante cambiaría la IP en cada petición y se saltaría el límite. Solo se debe confiar en esa cabecera cuando la pone un proxy nuestro y conocido.
+
+## Semana 12 · reto: mínimo privilegio en la base
+
+### D5 · Con qué usuario se conecta la API
+Se llama `comunitario_api` (`NOSUPERUSER NOCREATEDB NOCREATEROLE`, no es dueño de ninguna tabla). Permisos, solo lo que el código usa: `SELECT` en `negocios`, `cuenta`, `categoria` y `medallas` (solo se leen); `SELECT, UPDATE` en `usuarios` (se lee y se cambia la reputación); `SELECT, INSERT, UPDATE, DELETE` en `comentarios` (se crean, se cambia el estado y los moderadores los borran); `SELECT, INSERT` en `puntos` y `usuario_medallas` (solo se agregan filas); y `USAGE` en las secuencias de `public` para que `INSERT` pueda usar el contador de id. Su contraseña es `APP_DB_PASSWORD`, solo en `.env` (no se sube); en `.env.example` hay un valor de ejemplo. Al intentar `drop table comentarios`, PostgreSQL respondió `ERROR: must be owner of table comentarios` (`reto_drop.txt`). Las seis peticiones dan 401, 200, 200, 403, 200 y 422 con este usuario.
+
+### D6 · Quién crea y cambia las tablas
+El usuario dueño (`DB_USER`, `postgres` en Compose), con `go run . -migrar` (o el servicio `migrar` de Compose, que corre una vez antes que la API). Ese comando ejecuta `AutoMigrate`, la semilla y los `GRANT`, y termina. La API normal ya no migra: arranca sin `-migrar` y en Compose ni siquiera recibe `DB_USER` ni `DB_PASSWORD`. Si cambian un modelo y arrancan la API con su usuario, no se cambia ninguna tabla (no es dueño): hay que correr otra vez `-migrar` con el dueño. Una tabla nueva también necesita su `GRANT` en `base.go`; si no, la API recibe `permission denied`.
+
+### D7 · Lo que esto no frena
+Si quedara una inyección, con `comunitario_api` alguien podría leer y escribir las tablas que la API ya usa (por ejemplo leer `cuenta` o borrar comentarios), porque la inyección corre con esos permisos. Ya no podría borrar ni cambiar tablas, crear usuarios ni leer otras bases. Esto no reemplaza las consultas con parámetros: limita el daño, no evita la inyección.

@@ -1,0 +1,6 @@
+                                List of roles
+    Role name    |                         Attributes                         
+-----------------+------------------------------------------------------------
+ comunitario_api | 
+ postgres        | Superuser, Create role, Create DB, Replication, Bypass RLS
+

@@ -13,17 +13,13 @@ import (
 	"COMUNITARIO/internal/comentarios/handler"
 	"COMUNITARIO/internal/comentarios/repositorio"
 	"COMUNITARIO/internal/comentarios/servicio"
-	"COMUNITARIO/internal/modelos"
-	"COMUNITARIO/internal/semilla"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 func main() {
 	reset := flag.Bool("reset", false, "Borra y recrea las tablas")
+	migrar := flag.Bool("migrar", false, "Crea tablas, semilla y permisos con el usuario dueño, y termina")
 	flag.Parse()
 
 	// 1. Configuración fuera del código (.env). Nada de claves en el repositorio.
@@ -32,28 +28,7 @@ func main() {
 	if secreto == "" {
 		log.Fatal("Falta JWT_SECRET en el archivo .env")
 	}
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Warn)})
-	if err != nil {
-		log.Fatal("Fallo al conectar a la base de datos: ", err)
-	}
-
-	// 2. Tablas: con -reset se borran todas y se recrean.
-	if *reset {
-		fmt.Println("Borrando tablas antiguas...")
-		if err := db.Migrator().DropTable(modelos.TodasAlReves()...); err != nil {
-			log.Fatal(err)
-		}
-	}
-	fmt.Println("Migrando las 8 tablas...")
-	if err := db.AutoMigrate(modelos.Todas()...); err != nil {
-		log.Fatal("Fallo la migración: ", err)
-	}
-	if err := semilla.Sembrar(db); err != nil {
-		log.Fatal("Fallo la semilla: ", err)
-	}
+	db := abrir(*migrar, *reset)
 
 	// 3. Se arman las capas: repositorio → servicio → handler → router.
 	repoGorm := repositorio.Nuevo(db)
