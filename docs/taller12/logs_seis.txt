@@ -1,0 +1,9 @@
+2026/11/19 23:18:19 "POST http://localhost:8080/login HTTP/1.1" from ::1 - 200 198B in 26.2655ms
+2026/11/19 23:18:20 "POST http://localhost:8080/comentarios HTTP/1.1" from ::1 - 201 224B in 7.744ms
+2026/11/19 23:18:21 "GET http://localhost:8080/comentarios HTTP/1.1" from ::1 - 401 43B in 0s
+2026/11/19 23:18:21 "POST http://localhost:8080/login HTTP/1.1" from ::1 - 200 201B in 22.5403ms
+2026/11/19 23:18:22 "POST http://localhost:8080/login HTTP/1.1" from ::1 - 200 201B in 24.6427ms
+2026/11/19 23:18:22 "GET http://localhost:8080/comentarios HTTP/1.1" from ::1 - 200 2009B in 1.2772ms
+2026/11/19 23:18:23 "PATCH http://localhost:8080/comentarios/15/estado HTTP/1.1" from ::1 - 403 42B in 0s
+2026/11/19 23:18:23 "PATCH http://localhost:8080/comentarios/15/estado HTTP/1.1" from ::1 - 200 219B in 6.0871ms
+2026/11/19 23:18:24 "PATCH http://localhost:8080/comentarios/1/estado HTTP/1.1" from ::1 - 422 35B in 520.2┬╡s
