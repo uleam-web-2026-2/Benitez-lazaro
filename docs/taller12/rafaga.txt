@@ -1,0 +1,93 @@
+### intento 1
+HTTP/1.1 401 Unauthorized
+Content-Type: text/plain; charset=utf-8
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Ratelimit-Limit: 5
+X-Ratelimit-Remaining: 4
+X-Ratelimit-Reset: 1795148091
+Date: Fri, 20 Nov 2026 04:14:03 GMT
+Content-Length: 28
+
+Usuario o clave incorrectos
+
+### intento 2
+HTTP/1.1 401 Unauthorized
+Content-Type: text/plain; charset=utf-8
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Ratelimit-Limit: 5
+X-Ratelimit-Remaining: 3
+X-Ratelimit-Reset: 1795148091
+Date: Fri, 20 Nov 2026 04:14:03 GMT
+Content-Length: 28
+
+Usuario o clave incorrectos
+
+### intento 3
+HTTP/1.1 401 Unauthorized
+Content-Type: text/plain; charset=utf-8
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Ratelimit-Limit: 5
+X-Ratelimit-Remaining: 2
+X-Ratelimit-Reset: 1795148091
+Date: Fri, 20 Nov 2026 04:14:03 GMT
+Content-Length: 28
+
+Usuario o clave incorrectos
+
+### intento 4
+HTTP/1.1 401 Unauthorized
+Content-Type: text/plain; charset=utf-8
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Ratelimit-Limit: 5
+X-Ratelimit-Remaining: 1
+X-Ratelimit-Reset: 1795148091
+Date: Fri, 20 Nov 2026 04:14:04 GMT
+Content-Length: 28
+
+Usuario o clave incorrectos
+
+### intento 5
+HTTP/1.1 401 Unauthorized
+Content-Type: text/plain; charset=utf-8
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Ratelimit-Limit: 5
+X-Ratelimit-Remaining: 0
+X-Ratelimit-Reset: 1795148091
+Date: Fri, 20 Nov 2026 04:14:04 GMT
+Content-Length: 28
+
+Usuario o clave incorrectos
+
+### intento 6
+HTTP/1.1 429 Too Many Requests
+Content-Type: text/plain; charset=utf-8
+Retry-After: 60
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Ratelimit-Limit: 5
+X-Ratelimit-Remaining: 0
+X-Ratelimit-Reset: 1795148091
+Date: Fri, 20 Nov 2026 04:14:04 GMT
+Content-Length: 18
+
+Too Many Requests
+
+### intento 7
+HTTP/1.1 429 Too Many Requests
+Content-Type: text/plain; charset=utf-8
+Retry-After: 60
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Ratelimit-Limit: 5
+X-Ratelimit-Remaining: 0
+X-Ratelimit-Reset: 1795148091
+Date: Fri, 20 Nov 2026 04:14:04 GMT
+Content-Length: 18
+
+Too Many Requests
+

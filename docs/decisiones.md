@@ -105,3 +105,17 @@ La base guarda sus archivos en el volumen `datos_pg` (montado en `/var/lib/postg
 
 ### D9 · Lo que se publica en la máquina
 Solo se publica el puerto de la API, `8080:8080` (el valor de `PORT`), que es al que llama Bruno. La base no se publica: así no choca con el PostgreSQL de Windows (5432) ni con el contenedor `pg` (5433), y no queda expuesta fuera de la red de Compose. Cuando necesitemos consultarla usamos `docker compose exec db psql -U postgres -d APP-COMUNITARIA`, y así revisamos los datos tras el `down`.
+
+## Semana 12 · la seguridad de la API
+
+### D1 · Lo que encontramos y cerramos
+La búsqueda con `git grep` dio 31 líneas. Ninguna arma SQL pegando texto del cliente: GORM usa `?` y sqlc usa `$1`, y los valores van aparte. El único texto libre del cliente que llega a una consulta es el `usuario` del login (`Where("login = ?", login)`), que va como parámetro. `?estado=` además se valida con `EstadoValido`, y `page`/`limit`/`id` se convierten a número con `strconv.Atoi`. No cambiamos código. La prueba del paso 1.4 respondió: filtro normal 200 con 2 comentarios; `?estado=' OR 1=1 --` dio 400 «estado no permitido» sin registros de más; `/comentarios/1 OR 1=1` dio 404.
+
+### D2 · El origen que puede leer nuestras respuestas
+Pusimos `http://localhost:5173`, donde va a correr el front, y no `*`: solo ese origen puede leer las respuestas desde un navegador (mínimo privilegio). CORS va arriba de todo, en `router.go`, porque la petición previa (OPTIONS) no trae token ni tiene manejador: si pasara antes por el guardia recibiría 401. Con curl desde `http://malo.example` el cambio de estado se ejecutó igual (200, comentario en `aprobado`): CORS no protege la API, solo hace que el navegador no deje leer la respuesta; curl y Bruno no lo revisan. Cuando publiquemos el front habrá que cambiar el origen por el dominio real.
+
+### D3 · El límite del login
+5 intentos por minuto por IP, con ventana deslizante: alcanza para que una persona se equivoque un par de veces y frena a quien prueba claves en masa. Solo en `POST /login` (con `r.With`) porque es la ruta pública donde se adivinan contraseñas; en las demás ya hay token, y si lo ponemos en todo, las peticiones normales de Bruno chocarían con el tope. En la ráfaga del `rafaga.txt` el primer 429 llegó en el intento 6 y `Retry-After` decía 60 segundos.
+
+### D4 · Detrás de un proxy
+`ClientIPFromRemoteAddr` toma la IP de la conexión TCP (`RemoteAddr`). Si la API queda detrás de un proxy, todas las peticiones llegarían con la IP del proxy: todos los usuarios compartirían un solo contador y el sexto intento de cualquiera bloquearía a todos. La solución no es leer `X-Forwarded-For` sin más, porque esa cabecera la puede escribir el cliente: un atacante cambiaría la IP en cada petición y se saltaría el límite. Solo se debe confiar en esa cabecera cuando la pone un proxy nuestro y conocido.
